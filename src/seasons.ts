@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SeasonData } from './interface/SeasonData';
+import {SeasonData} from './interface/SeasonData';
 import {CircuitData} from "./interface/CircuitData";
 
 export class Seasons {
@@ -21,30 +21,30 @@ export class Seasons {
         const response = await axios.get(`https://ergast.com/api/f1/${year}.json`);
         const racesData = response.data.MRData.RaceTable.Races;
 
-        const circuit: CircuitData = {
-            name: racesData.Circuit.circuitName,
-            wikiUrl: racesData.Circuit.url,
-            id: racesData.Circuit.circuitId,
-            lat: Number.parseFloat(racesData.Circuit.Location.lat),
-            long: Number.parseFloat(racesData.Circuit.Location.long),
-            local: racesData.Circuit.Location.locality,
-            country: racesData.Circuit.Location.country
-        }
+        return racesData.map((raceData: any) => {
+            const circuit: CircuitData = {
+                name: raceData.Circuit.circuitName,
+                wikiUrl: raceData.Circuit.url,
+                id: raceData.Circuit.circuitId,
+                lat: parseFloat(raceData.Circuit.Location.lat),
+                long: parseFloat(raceData.Circuit.Location.long),
+                local: raceData.Circuit.Location.locality,
+                country: raceData.Circuit.Location.country
+            }
 
-        return racesData.map((racesData: any) => ({
-            season: year,
-            round: racesData.round,
-            wikiUrl: racesData.wikiUrl,
-            raceName: racesData.raceName,
-            circuit: circuit,
-            date: new Date(racesData.date),
-            time: racesData.time,
-            firstPractice: new Date(racesData.FirstPractice.date),
-            secondPractice: new Date(racesData.SecondPractice.date),
-            thirdPractice: new Date(racesData.ThirdPractice.data),
-            qualifying: new Date(racesData.Qualifying.date)
-        }));
+            return {
+                season: year,
+                round: raceData.round,
+                wikiUrl: raceData.url,
+                raceName: raceData.raceName,
+                circuit: circuit,
+                date: new Date(raceData.date),
+                time: raceData.time,
+                firstPractice: raceData.FirstPractice?.date ? raceData.FirstPractice.date : null,
+                secondPractice: raceData.SecondPractice?.date ? raceData.SecondPractice.date : null,
+                thirdPractice: raceData.ThirdPractice?.date ? raceData.ThirdPractice.date : null,
+                qualifying: raceData.Qualifying?.date ? raceData.Qualifying.date : null,
+            };
+        });
     }
-
-   
 }

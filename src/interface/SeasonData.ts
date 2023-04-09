@@ -8,8 +8,8 @@ export interface SeasonData {
     circuit: CircuitData,
     date: Date,
     time: string,
-    firstPractice: Date,
-    secondPractice: Date,
-    thirdPractice: Date,
-    qualifying: Date
+    firstPractice?: Date,
+    secondPractice?: Date,
+    thirdPractice?: Date,
+    qualifying?: Date
 }

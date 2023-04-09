@@ -33,7 +33,9 @@ export class Driver {
         const response = await axios.get('https://ergast.com/api/f1/current/drivers.json');
         const drivers = response.data.MRData.DriverTable.Drivers;
 
-        const possibleDriver = drivers.find((d: any) => d.permanentNumber?.toLowerCase() === input || d.familyName.toLowerCase() === input);
+        const inputStr = String(input).toLowerCase();
+
+        const possibleDriver = drivers.find((d: any) => (d.permanentNumber && String(d.permanentNumber).toLowerCase() === inputStr) || d.familyName.toLowerCase() === inputStr);
 
         const driverStatsResponse = await axios.get(`https://ergast.com/api/f1/drivers/${possibleDriver.driverId}/results.json`);
         const results = driverStatsResponse.data.MRData.RaceTable.Races;

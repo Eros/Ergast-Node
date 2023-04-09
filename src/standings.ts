@@ -14,7 +14,7 @@ export class Standings {
      */
     public async getForYear(year: string | number): Promise<StandingData[]> {
         const response = await axios.get(`https://ergast.com/api/f1/${year}/driverStandings.json`);
-        const standingsData = response.data.MRData.StandingsTable.StandingsList[0].DriverStandings;
+        const standingsData = response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
 
         return standingsData.map((standing: any, index: number) => ({
             year: new Date(year),
@@ -32,11 +32,12 @@ export class Standings {
                 nationality: standing.Driver.nationality
             },
             constructor: {
-                id: standing.Constructor[0].constructorId,
-                wikiUrl: standing.Constructor[0].url,
-                name: standing.Constructor[0].name,
-                nationality: standing.Constructor[0].nationality
+                id: standing.Constructors[0].constructorId,
+                wikiUrl: standing.Constructors[0].url,
+                name: standing.Constructors[0].name,
+                nationality: standing.Constructors[0].nationality
             }
         }));
     }
+
 }
