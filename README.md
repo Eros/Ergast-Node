@@ -3,6 +3,12 @@
 Small Async NodeJS wrapper for the Ergast API which provides data for the Formula 1 racing series.
 See https://ergast.com/mrd/ for more information on their documentation.
 
+# Install
+
+`npm install @rapidthenerd/ergast-ts`
+
+[Npm link](https://www.npmjs.com/package/@rapidthenerd/ergast-ts?activeTab=readme)
+
 # Setup
 
 `npm install axios`
