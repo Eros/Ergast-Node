@@ -13,6 +13,8 @@ See https://ergast.com/mrd/ for more information on their documentation.
 
 `npm install axios`
 
+`npm intsall -D @types/node-cache`
+
 > Minimum supported Node.js version is v14
 
 # Usage

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {SeasonData} from './interface/SeasonData';
 import {CircuitData} from "./interface/CircuitData";
+import {Cache} from "./cache/cache";
 
 export class Seasons {
 
@@ -18,10 +19,16 @@ export class Seasons {
      * @return an array of {@link SeasonData}
      */
     public async getForYear(year: string | number): Promise<SeasonData[]> {
+
+        const key = Cache.generateKey("seasons", year);
+        if (Cache.isEnabled() && Cache.isInCache(key)) {
+            return Cache.get(key);
+        }
+
         const response = await axios.get(`https://ergast.com/api/f1/${year}.json`);
         const racesData = response.data.MRData.RaceTable.Races;
 
-        return racesData.map((raceData: any) => {
+        const seasonData: SeasonData[] = racesData.map((raceData: any) => {
             const circuit: CircuitData = {
                 name: raceData.Circuit.circuitName,
                 wikiUrl: raceData.Circuit.url,
@@ -46,5 +53,9 @@ export class Seasons {
                 qualifying: raceData.Qualifying?.date ? raceData.Qualifying.date : null,
             };
         });
+
+        Cache.set(key, seasonData);
+
+        return seasonData;
     }
 }

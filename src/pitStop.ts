@@ -1,10 +1,18 @@
 import axios from "axios";
 import {CircuitData} from "./interface/CircuitData";
 import {PitStopEntry} from "./interface/PitStopEntry";
+import {Cache} from "./cache/cache";
+import {PitStopData} from "./interface/PitStopData";
 
 export class PitStop {
 
-    public async getFor(year: number | string, raceNumber: number, stop: number) {
+    public async getFor(year: number | string, raceNumber: number, stop: number): Promise<PitStopData> {
+        
+        const key = Cache.generateKey("pit_stop", year, raceNumber, stop);
+        if (Cache.isEnabled() && Cache.isInCache(key)) {
+            return Cache.get(key);
+        }
+        
         const response = await axios.get(`https://ergast.com/api/f1/${year}/${raceNumber}/${stop}.json`);
         const responseData = response.data.MRData.RaceTable;
 
@@ -40,12 +48,16 @@ export class PitStop {
             });
         }
 
-        return {
+        const pitStop: PitStopData = {
             season: year,
             round: raceNumber,
             stop: stop,
             circuit: circuitData,
             totalStops: pitStopEntries
         }
+
+        Cache.set(key, pitStop);
+
+        return pitStop;
     }
 }

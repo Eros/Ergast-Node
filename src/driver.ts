@@ -1,5 +1,6 @@
 import {DriverCareerData} from "./interface/DriverCareerData";
 import axios from "axios";
+import {Cache} from "./cache/cache";
 
 export class Driver {
 
@@ -30,6 +31,12 @@ export class Driver {
      * @private
      */
     private async getByInput(input: string | number): Promise<DriverCareerData> {
+        const key = Cache.generateKey("driver", input);
+
+        if (Cache.isEnabled() && Cache.isInCache(key)) {
+            return Cache.get(key);
+        }
+
         const response = await axios.get('https://ergast.com/api/f1/current/drivers.json');
         const drivers = response.data.MRData.DriverTable.Drivers;
 
@@ -40,7 +47,8 @@ export class Driver {
         const driverStatsResponse = await axios.get(`https://ergast.com/api/f1/drivers/${possibleDriver.driverId}/results.json`);
         const results = driverStatsResponse.data.MRData.RaceTable.Races;
 
-        return {
+
+        const driverData: DriverCareerData = {
             name: possibleDriver.givenName + possibleDriver.familyName,
             permNumber: possibleDriver.permanentNumber,
             totalRaces: results.length,
@@ -50,6 +58,10 @@ export class Driver {
             wikiUrl: possibleDriver.url,
             dateOfBirth: new Date(possibleDriver.dateOfBirth)
         };
+
+        Cache.set(key, driverData);
+
+        return driverData;
     }
 
     /**

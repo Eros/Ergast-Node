@@ -2,10 +2,17 @@ import {QualifyingData} from "./interface/QualifyingData";
 import axios from "axios";
 import {CircuitData} from "./interface/CircuitData";
 import {QualifyingResultEntry} from "./interface/QualifyingResultEntry";
+import {Cache} from "./cache/cache";
 
 export class Qualifying {
 
     public async getFor(year: string | number, round: number): Promise<QualifyingData> {
+
+        const key = Cache.generateKey("qualifying", year, round);
+        if (Cache.isEnabled() && Cache.isInCache(key)) {
+            return Cache.get(key);
+        }
+
         const response = await axios.get(`https://ergast.com/api/f1/${year}/${round}/qualifying.json`);
         const responseData = response.data.MRData.RaceTable;
 
@@ -53,7 +60,7 @@ export class Qualifying {
             });
         }
 
-        return {
+        const qualData: QualifyingData = {
             season: year,
             round: round,
             wikiUrl: responseData.url,
@@ -62,5 +69,9 @@ export class Qualifying {
             time: responseData.time,
             qualifyingEntries: qualifyingEntries
         }
+
+        Cache.set(key, qualData);
+
+        return qualData;
     }
 }

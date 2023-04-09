@@ -1,5 +1,6 @@
 import {StandingData} from "./interface/StandingData";
 import axios from "axios";
+import {Cache} from "./cache/cache";
 
 export class Standings {
 
@@ -13,10 +14,17 @@ export class Standings {
      * @return an array of {@link StandingData}
      */
     public async getForYear(year: string | number): Promise<StandingData[]> {
+
+        const key = Cache.generateKey("standings", year);
+
+        if (Cache.isInCache(key) && Cache.isEnabled()) {
+            return Cache.get(key);
+        }
+
         const response = await axios.get(`https://ergast.com/api/f1/${year}/driverStandings.json`);
         const standingsData = response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
 
-        return standingsData.map((standing: any, index: number) => ({
+        const standings: StandingData[] = standingsData.map((standing: any, index: number) => ({
             year: new Date(year),
             position: index + 1,
             points: standing.points,
@@ -38,6 +46,10 @@ export class Standings {
                 nationality: standing.Constructors[0].nationality
             }
         }));
+
+        Cache.set(key, standings);
+
+        return standingsData;
     }
 
 }

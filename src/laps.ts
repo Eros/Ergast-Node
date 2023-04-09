@@ -2,6 +2,7 @@ import { LapsData } from "./interface/LapsData";
 import axios from "axios";
 import { CircuitData } from "./interface/CircuitData";
 import { TimingsData } from "./interface/TimingsData";
+import {Cache} from "./cache/cache";
 
 export class Laps {
 
@@ -10,6 +11,11 @@ export class Laps {
     }
 
     public async getFor(year: number | string, raceNumber: number, lap: number): Promise<LapsData> {
+        const key = Cache.generateKey("laps", year, raceNumber, lap);
+        if (Cache.isEnabled() && Cache.isInCache(key)) {
+            return Cache.get(key);
+        }
+
         const response = await axios.get(`https://ergast.com/api/f1/${year}/${raceNumber}/laps/${lap}.json`);
         const responseData = response.data.MRData.RaceTable;
 
@@ -40,16 +46,20 @@ export class Laps {
             timings.push(time);
         }
 
-        return {
+        const laps: LapsData = {
             season: parseInt(year.toString()),
-            round: raceNumber,
-            wikiUrl: racesData.url,
-            raceName: racesData.raceName,
-            circuit: circuitData,
-            date: new Date(racesData.date),
-            time: racesData.time,
-            number: parseInt(lap.toString()),
-            timings: timings,
+                round: raceNumber,
+                wikiUrl: racesData.url,
+                raceName: racesData.raceName,
+                circuit: circuitData,
+                date: new Date(racesData.date),
+                time: racesData.time,
+                number: parseInt(lap.toString()),
+                timings: timings,
         };
+
+        Cache.set(key, laps);
+
+        return laps;
     }
 }
