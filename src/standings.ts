@@ -25,7 +25,7 @@ export class Standings {
         const standingsData = response.data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
 
         const standings: StandingData[] = standingsData.map((standing: any, index: number) => ({
-            year: new Date(year),
+            year: year,
             position: index + 1,
             points: standing.points,
             wins: standing.wins,

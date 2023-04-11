@@ -2,7 +2,7 @@ import {CircuitData} from "./CircuitData";
 import {TimingsData} from "./TimingsData";
 
 export interface LapsData {
-    season: number,
+    season: string | number,
     round: number,
     wikiUrl: string,
     raceName: string,

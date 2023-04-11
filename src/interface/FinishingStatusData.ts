@@ -1,5 +1,5 @@
 export interface FinishingStatusData {
-    season: number,
+    season: string | number,
     round: number,
     statusId: number,
     count: number,
