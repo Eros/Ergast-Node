@@ -6,6 +6,10 @@ import {Cache} from "./cache/cache";
 
 export class Qualifying {
 
+    public async getForCurrentYear(round: number): Promise<QualifyingData> {
+        return this.getFor(new Date().getFullYear(), round);
+    }
+
     public async getFor(year: string | number, round: number): Promise<QualifyingData> {
 
         const key = Cache.generateKey("qualifying", year, round);
@@ -17,6 +21,11 @@ export class Qualifying {
         const responseData = response.data.MRData.RaceTable;
 
         const racesData = responseData.Races[0];
+
+        if (!racesData) {
+            throw new Error(`No Data found for year ${year}`);
+        }
+
         const circuitData: CircuitData = {
             season: racesData.season,
             round: racesData.round,

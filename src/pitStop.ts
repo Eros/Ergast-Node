@@ -6,21 +6,29 @@ import {PitStopData} from "./interface/PitStopData";
 
 export class PitStop {
 
+    public async getForCurrentYear(raceNumber: number, stop: number): Promise<PitStopData> {
+        return this.getFor(new Date().getFullYear(), raceNumber, stop);
+    }
+
     public async getFor(year: number | string, raceNumber: number, stop: number): Promise<PitStopData> {
-        
+
         const key = Cache.generateKey("pit_stop", year, raceNumber, stop);
         if (Cache.isEnabled() && Cache.isInCache(key)) {
             return Cache.get(key);
         }
-        
-        const response = await axios.get(`https://ergast.com/api/f1/${year}/${raceNumber}/${stop}.json`);
+
+        const response = await axios.get(`https://ergast.com/api/f1/${year}/${raceNumber}/pitstops/${stop}.json`);
         const responseData = response.data.MRData.RaceTable;
 
-        const racesData = responseData.Races[0];
+        const racesData = responseData.Races && responseData.Races[0] ? responseData.Races[0] : null;
+
+        if (!racesData) {
+            throw new Error(`Could not find data for year ${year}, raceNumber ${raceNumber}, stop ${stop}`);
+        }
 
         const circuitData: CircuitData = {
-            season: racesData.season,
-            round: racesData.round,
+            season: responseData.season,
+            round: responseData.round,
             name: racesData.Circuit.circuitName,
             wikiUrl: racesData.Circuit.url,
             id: racesData.Circuit.circuitId,
@@ -30,7 +38,7 @@ export class PitStop {
             country: racesData.Circuit.Location.country,
         };
 
-        const pitStopsData = racesData.PitStops;
+        const pitStopsData = racesData.PitStops && racesData.PitStops.length ? racesData.PitStops : [];
 
         const pitStopEntries: PitStopEntry[] = [];
         // Don't know how many stops there could be
@@ -60,4 +68,5 @@ export class PitStop {
 
         return pitStop;
     }
+
 }

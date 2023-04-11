@@ -1,7 +1,7 @@
 import { CircuitData } from "./CircuitData";
 
 export interface SeasonData {
-    season: string,
+    season: string | number,
     round: number,
     wikiUrl: string,
     raceName: string,

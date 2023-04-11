@@ -1,5 +1,5 @@
 export interface CircuitData {
-    season?: string,
+    season?: string | number,
     round?: number,
     name: string,
     wikiUrl: string,

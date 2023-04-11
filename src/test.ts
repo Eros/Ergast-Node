@@ -6,9 +6,10 @@ import {Constructors} from "./constructors";
 import {FinishingStatus} from "./finishingStatus";
 import {Laps} from "./laps";
 import {ErgastNode} from "./ergastNode";
+import {PitStop} from "./pitStop";
 
-async function test() {
-    const season: Seasons = new Seasons();
+async function testSeasons(ergast: ErgastNode) {
+    const season: Seasons = ergast.seasons;
 
     const seasonDataForYear = await season.getForYear(2020);
     for (let seasonDatum of seasonDataForYear) {
@@ -51,8 +52,10 @@ async function test() {
         console.log(seasonDatum.thirdPractice);
         console.log(seasonDatum.qualifying);
     }
+}
 
-    const driver = new Driver();
+async function testDriver(ergast: ErgastNode) {
+    const driver = ergast.driver;
 
     const driverByNumber = await driver.getByDriverNumber(33);
 
@@ -77,8 +80,10 @@ async function test() {
     console.log(driverByName.nationality);
     console.log(driverByName.wikiUrl);
     console.log(driverByName.dateOfBirth);
+}
 
-    const standings = new Standings();
+async function testStandings(ergast: ErgastNode) {
+    const standings = ergast.standings;
 
     const standingsByYear = await standings.getForYear(2020);
     for (let standingDatum of standingsByYear) {
@@ -119,8 +124,10 @@ async function test() {
         console.log(standingDatum.constructor.name);
         console.log(standingDatum.constructor.nationality);
     }
+}
 
-    const circuit = new Circuit();
+async function testCircuits(ergast: ErgastNode) {
+    const circuit = ergast.circuit;
 
     const circuitForCurrentYear = await circuit.getForCurrentYear(1);
     console.log(circuitForCurrentYear.season);
@@ -143,16 +150,20 @@ async function test() {
     console.log(circuitForYear.long);
     console.log(circuitForYear.local);
     console.log(circuitForYear.country);
+}
 
-    const constructors = new Constructors();
+async function testConstructors(ergast: ErgastNode) {
+    const constructors = ergast.constructors;
 
     const constructorForTeam = await constructors.getForTeam('red_bull');
     console.log(constructorForTeam.id);
     console.log(constructorForTeam.wikiUrl);
     console.log(constructorForTeam.name);
     console.log(constructorForTeam.nationality);
+}
 
-    const finishing = new FinishingStatus();
+async function testFinishing(ergast: ErgastNode) {
+    const finishing = ergast.finishingStatus;
     const finishingForYear = await finishing.getFor(2000, 3);
 
     for (let finishingStatusDatum of finishingForYear) {
@@ -172,8 +183,10 @@ async function test() {
         console.log(finishingStatusDatum.count);
         console.log(finishingStatusDatum.status);
     }
+}
 
-    const laps = new Laps();
+async function testLaps(ergast: ErgastNode) {
+    const laps = ergast.laps;
 
     const lapsFor = await laps.getFor(2000, 3, 2);
 
@@ -201,4 +214,88 @@ async function test() {
     }
 }
 
-test();
+async function testPitStops(ergast: ErgastNode) {
+    const pitStops = ergast.pitStops;
+
+    const pitStopsForYear = await pitStops.getFor(2014, 4, 1);
+
+    console.log(pitStopsForYear.stop);
+    console.log(pitStopsForYear.season);
+    console.log(pitStopsForYear.circuit.name);
+    console.log(pitStopsForYear.circuit.lat);
+    console.log(pitStopsForYear.circuit.long);
+    console.log(pitStopsForYear.circuit.local);
+    console.log(pitStopsForYear.circuit.country);
+    console.log(pitStopsForYear.circuit.id);
+    console.log(pitStopsForYear.circuit.wikiUrl);
+    console.log(pitStopsForYear.circuit.round);
+
+    const pitStopsForCurrentYear = await pitStops.getForCurrentYear(2, 3);
+
+    console.log(pitStopsForCurrentYear.stop);
+    console.log(pitStopsForCurrentYear.season);
+    console.log(pitStopsForCurrentYear.circuit.name);
+    console.log(pitStopsForCurrentYear.circuit.lat);
+    console.log(pitStopsForCurrentYear.circuit.long);
+    console.log(pitStopsForCurrentYear.circuit.local);
+    console.log(pitStopsForCurrentYear.circuit.country);
+    console.log(pitStopsForCurrentYear.circuit.id);
+    console.log(pitStopsForCurrentYear.circuit.wikiUrl);
+    console.log(pitStopsForCurrentYear.circuit.round);
+
+}
+
+async function testQualifying(ergast: ErgastNode) {
+    const qualifying = ergast.qualifying;
+
+    const qualifyingForYear = await qualifying.getFor(2022, 2);
+
+    console.log(qualifyingForYear.season);
+    console.log(qualifyingForYear.round);
+    console.log(qualifyingForYear.wikiUrl);
+    console.log(qualifyingForYear.circuit.name);
+    console.log(qualifyingForYear.circuit.lat);
+    console.log(qualifyingForYear.circuit.long);
+    console.log(qualifyingForYear.circuit.local);
+    console.log(qualifyingForYear.circuit.country);
+    console.log(qualifyingForYear.circuit.id);
+    console.log(qualifyingForYear.circuit.wikiUrl);
+    console.log(qualifyingForYear.circuit.round);
+    console.log(qualifyingForYear.date.toString());
+    console.log(qualifyingForYear.time);
+
+    for (let qualifyingEntry of qualifyingForYear.qualifyingEntries) {
+        console.log(qualifyingEntry.number);
+        console.log(qualifyingEntry.position);
+        console.log(qualifyingEntry.driverId);
+        console.log(qualifyingEntry.permanentNumber);
+        console.log(qualifyingEntry.code);
+        console.log(qualifyingEntry.wikiUrl);
+        console.log(qualifyingEntry.givenName);
+        console.log(qualifyingEntry.familyName);
+        console.log(qualifyingEntry.dateOfBirth.toString());
+        console.log(qualifyingEntry.nationality);
+        console.log(qualifyingEntry.constructor.id);
+        console.log(qualifyingEntry.constructor.wikiUrl);
+        console.log(qualifyingEntry.constructor.name);
+        console.log(qualifyingEntry.constructor.nationality);
+        console.log(qualifyingEntry.q1);
+        console.log(qualifyingEntry.q2);
+        console.log(qualifyingEntry.q3);
+    }
+}
+
+async function testAll() {
+    const ergast: ErgastNode = new ErgastNode();
+
+    await testSeasons(ergast);
+    await testDriver(ergast);
+    await testStandings(ergast);
+    await testCircuits(ergast);
+    await testConstructors(ergast);
+    await testLaps(ergast);
+    await testPitStops(ergast);
+    await testQualifying(ergast);
+}
+
+testAll().then(r => console.log('All tests completed.'));

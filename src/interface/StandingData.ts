@@ -2,7 +2,7 @@ import {StandingsDriverData} from "./StandingsDriverData";
 import {ConstructorData} from "./ConstructorData";
 
 export interface StandingData {
-    year: number,
+    year: string | number,
     position: number,
     points: number,
     wins: number,

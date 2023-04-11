@@ -47,7 +47,7 @@ export class Laps {
         }
 
         const laps: LapsData = {
-            season: parseInt(year.toString()),
+            season: year,
                 round: raceNumber,
                 wikiUrl: racesData.url,
                 raceName: racesData.raceName,
